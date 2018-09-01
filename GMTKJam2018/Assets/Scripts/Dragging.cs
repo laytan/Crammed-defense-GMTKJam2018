@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Dragging : MonoBehaviour {
 
-    public GameObject draggableModule;
-
     private GameObject keepAtMousePosition;
     private Vector2 mousePos;
 	// Use this for initialization
@@ -17,30 +15,17 @@ public class Dragging : MonoBehaviour {
 	void Update () {
         //Handy because we use this alot
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        
-        //Temporary input
-        //TODO: Change to ui elements
-		if(Input.GetKeyDown(KeyCode.M))
+       
+
+
+        if (Input.GetMouseButtonDown(0))
         {
-            DragThis(draggableModule);
-            //Debug.Log("Selected module");
-        }
-        if(Input.GetMouseButtonDown(0))
-        {
-            //If the draggable script says we can't drop, return
-            Draggable draggable = keepAtMousePosition.GetComponent<Draggable>();
-            if (draggable != null && draggable.canDrop == false)
+            //If we can drop the module
+            if (CanWeDrop())
             {
-                return;
+                //Make the selected object spawn the real module
+                keepAtMousePosition.GetComponent<Draggable>().SpawnModule(mousePos, keepAtMousePosition);
             }
-            //If there is nothing we selected
-            if(keepAtMousePosition == null)
-            {
-                //Debug.Log("Nothing to drop");
-                return;
-            }
-            //Make the selected object spawn the real module
-            draggable.SpawnModule(mousePos, keepAtMousePosition);
         }
 
         //Keep the dragging object at our mouse position
@@ -50,7 +35,7 @@ public class Dragging : MonoBehaviour {
         }      
 	}
 
-    void DragThis(GameObject prefab)
+    public void DragThis(GameObject prefab)
     {
         //If we are dragging something destroy it so we can replace it
         if (keepAtMousePosition != null)
@@ -62,5 +47,24 @@ public class Dragging : MonoBehaviour {
         //Instantiate the dragging prefab, and set it as keepatmouseposition so it stays at the mouse
         GameObject dragging = Instantiate(prefab, mousePos, Quaternion.identity);
         keepAtMousePosition = dragging;
+
+    }
+
+    bool CanWeDrop()
+    {
+        if(keepAtMousePosition == null)
+        {
+            return false;
+        }
+        Draggable draggable = keepAtMousePosition.GetComponent<Draggable>();
+        if (draggable == null)
+        {
+            return false;
+        }
+        if (keepAtMousePosition == null || draggable.canDrop == false)
+        {
+            return false;
+        }
+        return true;
     }
 }

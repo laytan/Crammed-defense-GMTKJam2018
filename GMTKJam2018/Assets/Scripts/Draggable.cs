@@ -6,12 +6,27 @@ public class Draggable : MonoBehaviour {
 
     public GameObject module;
     public bool canDrop = true;
+    public int cost;
+    private GameController gc;
+
+    void Start()
+    {
+        gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>(); 
+    }
+
     public void SpawnModule(Vector3 pos, GameObject uiGO)
     {
-        Debug.Log("Dropping");
-        //Destroy the ui object and instantiate a real one
-        Instantiate(module, pos, Quaternion.identity);
-        Destroy(uiGO);
+        if (gc.TakeMoney(cost))
+        {
+            Debug.Log("Dropping");
+            //Destroy the ui object and instantiate a real one
+            Instantiate(module, pos, Quaternion.identity);
+            Destroy(uiGO);
+        }
+        else
+        {
+            Debug.Log("Out of money");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

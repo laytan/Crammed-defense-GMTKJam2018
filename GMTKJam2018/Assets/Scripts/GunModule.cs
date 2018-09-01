@@ -5,9 +5,10 @@ using UnityEngine;
 public class GunModule : Module {
 
     private GameObject gun;
+    public GameObject bullet;
+    private GameObject bulletSpawnPoint;
     public float rotateSpeed;
     private bool aim = true;
-
     public float timeBetweenShots;
     private float nextShotTime = 0f;
 
@@ -20,6 +21,7 @@ public class GunModule : Module {
     // Use this for initialization
     void Start () {
         gun = transform.GetChild(1).gameObject;
+        bulletSpawnPoint = gun.transform.GetChild(0).gameObject;
 	}
 	
 	// Update is called once per frame
@@ -30,8 +32,8 @@ public class GunModule : Module {
         //Checks if we are allowed to shoot again, if so, shoot and bump up the time fir next shot
         if(Time.time > nextShotTime)
         {
-            nextShotTime = Time.time + nextShotTime;
-            Debug.Log("Shoot");
+            nextShotTime = Time.time + timeBetweenShots;
+            Shoot();
         }
 
         //If we want to aim
@@ -39,6 +41,8 @@ public class GunModule : Module {
         {
             //Get the closest enemy from the enemy controller
             GameObject closestEnemy = ec.GetClosestEnemy();
+            if(closestEnemy == null)
+            { return; }
             //Get the direction that we need to rotate to
             Vector3 dir = closestEnemy.transform.position - gun.transform.position;
             //Math i don't understand
@@ -49,4 +53,8 @@ public class GunModule : Module {
             gun.transform.rotation = Quaternion.Slerp(gun.transform.rotation, q, Time.deltaTime * rotateSpeed);
         }
 	}
+    void Shoot()
+    {
+        GameObject bulletObj = Instantiate(bullet, bulletSpawnPoint.transform.position, gun.transform.rotation);
+    }
 }
