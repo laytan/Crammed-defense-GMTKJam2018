@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour {
+    [HideInInspector]
     public float speed;
+    [HideInInspector]
     public int damage;
 
 	// Use this for initialization

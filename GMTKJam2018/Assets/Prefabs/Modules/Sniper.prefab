@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 50002760387386596}
   - component: {fileID: 114534713742567440}
   m_Layer: 0
-  m_Name: Machine gun
+  m_Name: Sniper
   m_TagString: Module
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 4654119804003426}
   - component: {fileID: 212510605786180736}
   - component: {fileID: 61003187104332294}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Module
   m_TagString: Module
   m_Icon: {fileID: 0}
@@ -189,11 +189,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ec: {fileID: 0}
   bullet: {fileID: 1011449103332918, guid: a29902e7e3ea7ef4c9de5ad7adef6cc4, type: 2}
-  rotateSpeed: 15
-  timeBetweenShots: 0.3
-  bulletSpeed: 25
-  bulletDamage: 1
-  range: 15
+  rotateSpeed: 40
+  timeBetweenShots: 5
+  bulletSpeed: 40
+  bulletDamage: 30
+  range: 100
 --- !u!212 &212287607657756102
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -229,7 +229,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: eddc2415d984e1d4396fd4f0c3c712ef, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a1f1c85edd348d0488a02a5be393ceb1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
