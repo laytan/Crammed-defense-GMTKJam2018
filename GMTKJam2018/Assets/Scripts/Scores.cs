@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Scores : MonoBehaviour {
     public GameObject timeLastedNumber, yourBestNumber;
@@ -19,8 +20,8 @@ public class Scores : MonoBehaviour {
         yourBestNumber.GetComponent<TextMeshProUGUI>().text = highscore;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void MainMenuButtonPressed()
+    {
+        SceneManager.LoadScene(0);
+    }
 }

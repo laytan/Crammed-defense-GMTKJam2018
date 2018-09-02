@@ -110,7 +110,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   module: {fileID: 1166052581953234, guid: d9826f0c144536346a995d49e8d47924, type: 2}
   canDrop: 1
-  cost: 5
+  cost: 10
+  drop: {fileID: 8300000, guid: 8b8ce1b6adcf00c438791c8e216670f9, type: 3}
 --- !u!212 &212384520195323028
 SpriteRenderer:
   m_ObjectHideFlags: 1

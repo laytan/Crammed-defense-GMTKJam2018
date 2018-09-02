@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour {
     private EnemyController ec;
     private GameController gc;
     public int moneyReward;
+    public AudioClip die;
     // Use this for initialization
     void Start () {
         ec = GameObject.FindGameObjectWithTag("EnemyController").GetComponent<EnemyController>();
@@ -28,11 +29,19 @@ public class Enemy : MonoBehaviour {
     public void TakeDamage(int damage)
     {
         health -= damage;
-        if(health < 0)
+        GetComponentInChildren<ParticleSystem>().Play();
+        if (health < 0)
         {
+            GetComponent<AudioSource>().PlayOneShot(die);
             gc.AddMoney(moneyReward);
-            Destroy(gameObject);
+            ec.RemoveEnemyFromList(gameObject);
+            transform.GetChild(0).gameObject.SetActive(false);
+            Invoke("Die", .3f);
 
         }
+    }
+    void Die()
+    {
+        Destroy(gameObject);
     }
 }

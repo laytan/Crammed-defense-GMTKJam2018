@@ -6,17 +6,25 @@ using TMPro;
 using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour {
     public int health;
+    [HideInInspector]
+    public int maxHealth;
     public int money;
     public GameObject slider;
     public GameObject dragging;
-    public GameObject baseModule, machineGunModule, sniperModule;
+    public GameObject baseModule, machineGunModule, sniperModule, hospitalModule;
     public GameObject moneyText;
     private bool holdingDownUp = false;
     private bool holdingDownDown = false;
     public float camSpeed;
     private GameObject cam;
+    public AudioClip castleDamage;
+    public AudioClip heal;
+    public AudioClip noMoney;
+    private AudioSource audioS;
     // Use this for initialization
     void Start () {
+        audioS = GetComponent<AudioSource>();
+        maxHealth = health;
         slider.GetComponent<Slider>().value = health;
         slider.GetComponent<Slider>().maxValue = health;
         moneyText.GetComponent<TextMeshProUGUI>().text = money.ToString();
@@ -27,19 +35,23 @@ public class GameController : MonoBehaviour {
 	void Update () {
 		if(holdingDownDown)
         {
-            if(cam.transform.position.y <= 3.7f)
+            if(cam.transform.position.y >= 3.7f)
             {
-                return;
+                cam.transform.position = Vector3.MoveTowards(cam.transform.position, new Vector3(cam.transform.position.x, 0, cam.transform.position.z), Time.deltaTime * camSpeed);
             }
-            cam.transform.position = Vector3.MoveTowards(cam.transform.position, new Vector3(cam.transform.position.x,0, cam.transform.position.z), Time.deltaTime * camSpeed);
+            
         }
         else if(holdingDownUp)
         {
-            cam.transform.position = Vector3.MoveTowards(cam.transform.position, new Vector3(cam.transform.position.x, 100, cam.transform.position.z), Time.deltaTime * camSpeed);
+            if(cam.transform.position.y <= 23.3f)
+            {
+                cam.transform.position = Vector3.MoveTowards(cam.transform.position, new Vector3(cam.transform.position.x, 100, cam.transform.position.z), Time.deltaTime * camSpeed);
+            }
         }
 	}
     public void TakeDamage()
     {
+        audioS.PlayOneShot(castleDamage);
         health--;
         slider.GetComponent<Slider>().value = health;
 
@@ -48,6 +60,14 @@ public class GameController : MonoBehaviour {
             slider.transform.GetChild(1).gameObject.SetActive(false);
             Die();
         }
+        GetComponentInChildren<ParticleSystem>().Play();
+        Camera.main.GetComponent<CameraShake>().StartShake();
+    }
+    public void Heal()
+    {
+        audioS.PlayOneShot(heal);
+        health++;
+        slider.GetComponent<Slider>().value = health;
     }
 
     void Die()
@@ -76,7 +96,10 @@ public class GameController : MonoBehaviour {
     public bool TakeMoney(int cost)
     {
         if(cost > money)
-        { return false; }
+        {
+            audioS.PlayOneShot(noMoney);
+            return false;
+        }
         else
         {
             money -= cost;
@@ -101,6 +124,10 @@ public class GameController : MonoBehaviour {
     public void SelectSniper()
     {
         dragging.GetComponent<Dragging>().DragThis(sniperModule);
+    }
+    public void SelectHospital()
+    {
+        dragging.GetComponent<Dragging>().DragThis(hospitalModule);
     }
 
     public void OnUpHoldBegin()

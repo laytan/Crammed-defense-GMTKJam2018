@@ -6,6 +6,7 @@ public class Dragging : MonoBehaviour {
 
     private GameObject keepAtMousePosition;
     private Vector2 mousePos;
+    private GameObject dragging;
 	// Use this for initialization
 	void Start () {
 		
@@ -27,6 +28,10 @@ public class Dragging : MonoBehaviour {
                 keepAtMousePosition.GetComponent<Draggable>().SpawnModule(mousePos, keepAtMousePosition);
             }
         }
+        if(Input.GetMouseButtonDown(1))
+        {
+            Deselect();
+        }
 
         //Keep the dragging object at our mouse position
         if(keepAtMousePosition != null)
@@ -34,7 +39,11 @@ public class Dragging : MonoBehaviour {
             keepAtMousePosition.transform.position = mousePos;
         }      
 	}
-
+    void Deselect()
+    {
+        keepAtMousePosition = null;
+        Destroy(dragging);
+    }
     public void DragThis(GameObject prefab)
     {
         //If we are dragging something destroy it so we can replace it
@@ -45,7 +54,7 @@ public class Dragging : MonoBehaviour {
             keepAtMousePosition = null;
         }
         //Instantiate the dragging prefab, and set it as keepatmouseposition so it stays at the mouse
-        GameObject dragging = Instantiate(prefab, mousePos, Quaternion.identity);
+        dragging = Instantiate(prefab, mousePos, Quaternion.identity);
         keepAtMousePosition = dragging;
 
     }

@@ -7,6 +7,7 @@ public class GunModule : Module {
     private GameObject gun;
     public GameObject bullet;
     private GameObject bulletSpawnPoint;
+    public float heightDamageMultiplier;
     public float rotateSpeed;
     private bool aim = true;
     public float timeBetweenShots;
@@ -14,6 +15,8 @@ public class GunModule : Module {
     public float bulletSpeed;
     public int bulletDamage;
     public float range;
+    private Animator anim;
+    private int startBulletDamage;
     //Call the awake function in Module class
     void Awake()
     {
@@ -22,12 +25,17 @@ public class GunModule : Module {
 
     // Use this for initialization
     void Start () {
+        startBulletDamage = bulletDamage;
+        anim = GetComponentInChildren<Animator>();
+        if(anim == null)
+        {
+
+        }
         gun = transform.GetChild(1).gameObject;
         bulletSpawnPoint = gun.transform.GetChild(0).gameObject;
 	}
 	bool AreAimingAtEnemy()
     {
-        GameObject closest = ec.GetClosestEnemy();
         Vector2 dir = gun.transform.right;
         bool toReturn = false;
         RaycastHit2D[] hit = Physics2D.RaycastAll(gun.transform.position, dir, range);
@@ -47,19 +55,16 @@ public class GunModule : Module {
 	void Update () {
         //Call the update function in module class
         base.OnUpdate();
-
+        bulletDamage = Mathf.RoundToInt(startBulletDamage + (transform.position.y * heightDamageMultiplier));
         //Checks if we are allowed to shoot again, if so, shoot and bump up the time fir next shot
         if(Time.time > nextShotTime)
         {
-            GameObject closest = ec.GetClosestEnemy();
-            if(closest != null)
-            {
                 if(AreAimingAtEnemy())
                 {
                     nextShotTime = Time.time + timeBetweenShots;
                     Shoot();
                 }
-            }
+            
             
         }
 
@@ -67,7 +72,7 @@ public class GunModule : Module {
         if (aim == true)
         {
             //Get the closest enemy from the enemy controller
-            GameObject closestEnemy = ec.GetClosestEnemy();
+            GameObject closestEnemy = ec.GetClosestEnemy(gameObject);
             if(closestEnemy == null)
             { return; }
             //Get the direction that we need to rotate to
@@ -82,8 +87,23 @@ public class GunModule : Module {
 	}
     void Shoot()
     {
+
+        if (anim != null)
+        {
+            anim.SetBool("Shoot", true);
+        }
+        Invoke("StopAnim", 1);
+        GetComponentInChildren<ParticleSystem>().Play();
         GameObject bulletObj = Instantiate(bullet, bulletSpawnPoint.transform.position, gun.transform.rotation);
         bulletObj.GetComponent<Bullet>().speed = bulletSpeed;
         bulletObj.GetComponent<Bullet>().damage = bulletDamage;
+    }
+    void StopAnim()
+    {
+        if (anim != null)
+        {
+            anim.SetBool("Shoot", false);
+        }
+        GetComponentInChildren<ParticleSystem>().Stop();
     }
 }

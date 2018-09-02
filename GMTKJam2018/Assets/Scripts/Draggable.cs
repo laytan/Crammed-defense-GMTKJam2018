@@ -8,6 +8,7 @@ public class Draggable : MonoBehaviour {
     public bool canDrop = true;
     public int cost;
     private GameController gc;
+    public AudioClip drop;
 
     void Start()
     {
@@ -18,7 +19,7 @@ public class Draggable : MonoBehaviour {
     {
         if (gc.TakeMoney(cost))
         {
-            Debug.Log("Dropping");
+            GameObject.FindGameObjectWithTag("UIAudio").GetComponent<AudioSource>().PlayOneShot(drop);
             //Destroy the ui object and instantiate a real one
             Instantiate(module, pos, Quaternion.identity);
             Destroy(uiGO);

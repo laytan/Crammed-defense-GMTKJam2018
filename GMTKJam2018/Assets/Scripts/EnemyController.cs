@@ -10,13 +10,15 @@ public class EnemyController : MonoBehaviour {
 
     private List<GameObject> spawnableEnemies = new List<GameObject>();
     private List<GameObject> enemies = new List<GameObject>();
+    private List<GameObject> targetedBySniper = new List<GameObject>();
 
     //Difficulty
     public float timeBetweenSpawns;
-    public int maxGroupSize;
+    public float maxGroupSize;
     public float groupSpawnPercent;
     public float enemiesRange;
 
+    public int moneyOverTimeAmt;
     [Header("Time between every bumb in difficulty")]
     public float difficultyChangeDelay;
     [Header("Seconds between spawning a new wave")]
@@ -24,9 +26,9 @@ public class EnemyController : MonoBehaviour {
     public float maxTimeBetweenSpawns;
     public float decreaseTimeBetweenSpawns;
     [Header("Maximum enemies spawned in a wave")]
-    public int minMaxGroupSize;
-    public int maxMaxGroupSize;
-    public int increaseMaxGroupSize;
+    public float minMaxGroupSize;
+    public float maxMaxGroupSize;
+    public float increaseMaxGroupSize;
     [Header("A percentage chance of a group spawning instead of a single enemy")]
     public float minGroupSpawnPercent;
     public float maxGroupSpawnPercent;
@@ -56,6 +58,7 @@ public class EnemyController : MonoBehaviour {
         groupSpawnPercent = Mathf.Clamp(groupSpawnPercent += increaseGroupSpawnPercent, minGroupSpawnPercent, maxGroupSpawnPercent);
         enemiesRange = Mathf.Clamp(enemiesRange += increaseEnemiesRange, 0, allEnemies.Length);
         ChangeSpawnableEnemies(enemiesRange);
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().AddMoney(moneyOverTimeAmt);
 
         StartCoroutine(CreepUpDifficulty());
     }
@@ -87,8 +90,7 @@ public class EnemyController : MonoBehaviour {
     {
         if (Random.Range(0, 100) < groupSpawnPercent)
         {
-            Debug.Log("Spawning a group");
-            int enemyAmount = Random.Range(0, maxGroupSize);
+            int enemyAmount = Random.Range(0, Mathf.FloorToInt(maxGroupSize));
             GameObject[] enemiesToSpawn = new GameObject[enemyAmount];
             for(int i = 0; i < enemyAmount; i++)
             {
@@ -98,7 +100,7 @@ public class EnemyController : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Spawning a single enemy");
+
             StartCoroutine(SpawnObjects(new GameObject[] { spawnableEnemies[Random.Range(0, spawnableEnemies.Count)] }));
         }
     }
@@ -108,33 +110,34 @@ public class EnemyController : MonoBehaviour {
         {
             GameObject enemy = Instantiate(obj, spawnPoint, Quaternion.identity);
             enemies.Add(enemy);
-            Debug.Log(enemy.name);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(Random.Range(0.1f,1f));
         }
     }
 
-    public GameObject GetClosestEnemy()
+    public GameObject GetClosestEnemy(GameObject asker)
     {
-        GameObject closestEnemy = null;
-        foreach(GameObject enemy in enemies)
+        GameObject returnEnemy = null;
+        foreach (GameObject enemy in enemies)
         {
-            if(closestEnemy == null)
+            //If a sniper has targeted it already
+            if(targetedBySniper.Contains(enemy))
+            { continue; }
+            //If it's the first iteration
+            if(returnEnemy == null)
             {
-                closestEnemy = enemy;
+                returnEnemy = enemy;
             }
-            else
+            //If it's closer then the current returnEnemy
+            else if (enemy.transform.position.x < returnEnemy.transform.position.x)
             {
-                if (enemy != null)
-                {
-                    if (enemy.transform.position.x < closestEnemy.transform.position.x)
-                    {
-                        //It's closer
-                        closestEnemy = enemy;
-                    }
-                }
+                returnEnemy = enemy;
             }
         }
-        return closestEnemy;
+        if(asker.tag == "Sniper")
+        {
+            targetedBySniper.Add(returnEnemy);
+        }
+        return returnEnemy;
     }
 
     public void RemoveEnemyFromList(GameObject enemy)
@@ -142,6 +145,10 @@ public class EnemyController : MonoBehaviour {
         if(enemies.Contains(enemy))
         {
             enemies.Remove(enemy);
+        }
+        if(targetedBySniper.Contains(enemy))
+        {
+            targetedBySniper.Remove(enemy);
         }
     } 
 }

@@ -7,9 +7,12 @@ public class Bullet : MonoBehaviour {
     public float speed;
     [HideInInspector]
     public int damage;
-
+    public AudioClip shoot;
+    private GameObject audioS;
 	// Use this for initialization
 	void Start () {
+        audioS = GameObject.FindGameObjectWithTag("Audio");
+        audioS.GetComponent<AudioSource>().PlayOneShot(shoot);
         Destroy(gameObject, 4);
 	}
 	
@@ -20,8 +23,7 @@ public class Bullet : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
-        Enemy en = collision.gameObject.GetComponent<Enemy>();
+        Enemy en = collision.gameObject.GetComponentInParent<Enemy>();
         if(en != null)
         {
             en.TakeDamage(damage);
