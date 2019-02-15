@@ -15,7 +15,7 @@ Defend your castle by getting creative in the limit space you get.
 
 Everything is made by myself in under 48 hours while having to go to work asswel.
 
-![Play or download it on itch.io!](https://laytanl.itch.io/crammed-defense)
+Play or download it on itch.io: https://laytanl.itch.io/crammed-defense
 
 ### Tools
 
